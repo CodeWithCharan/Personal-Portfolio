@@ -5,8 +5,10 @@ import { useState, useEffect } from "react";
 
 const navLinks = [
   { href: "#home", label: "Home", sectionId: "home" },
+  { href: "#experience", label: "Experience", sectionId: "experience" },
   { href: "#about", label: "About", sectionId: "about" },
-  { href: "#lab", label: "Lab", sectionId: "lab" },
+  { href: "#projects", label: "Projects", sectionId: "projects" },
+  { href: "#contact", label: "Contact", sectionId: "contact" },
 ];
 
 export default function Header(): React.JSX.Element {
@@ -48,7 +50,7 @@ export default function Header(): React.JSX.Element {
           </Link>
 
           {/* Nav links with active underline indicator */}
-          <ul className="flex items-center gap-8 list-none m-0 p-0">
+          <ul className="flex items-center gap-4 sm:gap-6 md:gap-8 list-none m-0 p-0 text-sm sm:text-base">
             {navLinks.map((link) => (
               <li key={link.href} className="m-0 p-0">
                 <Link
