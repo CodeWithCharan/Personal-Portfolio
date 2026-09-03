@@ -13,6 +13,7 @@ const navLinks = [
 
 export default function Header(): React.JSX.Element {
   const [activeSection, setActiveSection] = useState("home");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const sectionIds = navLinks.map((l) => l.sectionId);
@@ -37,6 +38,14 @@ export default function Header(): React.JSX.Element {
     return () => observer.disconnect();
   }, []);
 
+  // Close menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = () => setMenuOpen(false);
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, [menuOpen]);
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0B0E17]/80 backdrop-blur-sm border-b border-white/10">
       <nav className="px-6 py-4">
@@ -49,8 +58,8 @@ export default function Header(): React.JSX.Element {
             &lt;CWC /&gt;
           </Link>
 
-          {/* Nav links with active underline indicator */}
-          <ul className="flex items-center gap-4 sm:gap-6 md:gap-8 list-none m-0 p-0 text-sm sm:text-base">
+          {/* Desktop nav — hidden on mobile */}
+          <ul className="hidden lg:flex items-center gap-8 list-none m-0 p-0">
             {navLinks.map((link) => (
               <li key={link.href} className="m-0 p-0">
                 <Link
@@ -74,8 +83,48 @@ export default function Header(): React.JSX.Element {
               </li>
             ))}
           </ul>
+
+          {/* Hamburger button — visible on mobile only */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuOpen((prev) => !prev);
+            }}
+            className="lg:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5 group"
+            aria-label="Toggle navigation menu"
+          >
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+          </button>
         </div>
       </nav>
+
+      {/* Mobile dropdown menu */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+        } bg-[#0B0E17]/95 backdrop-blur-sm border-t border-white/10`}
+      >
+        <ul className="flex flex-col px-6 py-4 gap-4 list-none m-0 p-4">
+          {navLinks.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className={`block text-base font-normal py-1 transition-colors duration-200 ${
+                  activeSection === link.sectionId
+                    ? "text-purple-400"
+                    : "text-white/80 hover:text-purple-400"
+                }`}
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </header>
   );
 }
